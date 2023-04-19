@@ -5,7 +5,7 @@ const UserNavbar = () => {
     <div>
       <nav className="relative container mx-auto p-5">
         <div className="flex items-center justify-between">
-          <div className="pt-2 text-xl text-white font-bold ">
+          <div className="pt-2 text-2xl text-white font-bold ">
             <p>Travelly</p>
           </div>
           <div className="flex space-x-6 pt-2 text-xl text-white">
@@ -15,6 +15,7 @@ const UserNavbar = () => {
           </div>
         </div>
       </nav>
+      <hr className=" w-full underline" />
     </div>
   );
 };

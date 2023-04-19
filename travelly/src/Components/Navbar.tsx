@@ -8,14 +8,14 @@ const Navbar = () => {
           <div className="pt-2 text-2xl">
             <p>Travelly</p>
           </div>
-          <div className="flex space-x-6 pt-2 text-xl">
+          <div className="flex space-x-6 pt-2 text-xl relative z-10">
             <Link to="/signup">Sign up</Link>
             <span>/</span>
             <Link to="/signin">Sign in</Link>
           </div>
         </div>
       </nav>
-      <hr className=" w-full  underline" />
+      <hr className=" w-full underline" />
     </div>
   );
 };
