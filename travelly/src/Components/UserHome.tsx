@@ -1,7 +1,15 @@
-import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  updateDoc,
+} from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useEffect, useState } from "react";
-import { db, storage } from "../firebase";
+import { Carousel } from "react-responsive-carousel";
+import "react-responsive-carousel/lib/styles/carousel.min.css";
+import { auth, db, storage } from "../firebase";
 import { BlogData } from "../interfaces/blogData";
 import UserNavbar from "./UserNavbar";
 
@@ -12,6 +20,7 @@ const UserHome = () => {
   const [updatedBlogData, setUpdatedBlogData] = useState<Partial<BlogData>>({});
   const [updatedImages, setUpdatedImages] = useState<File[]>([]);
   const [updatedPriceRange, setUpdatedPriceRange] = useState("");
+  const [currentUserEmail, setCurrentUserEmail] = useState("");
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
@@ -53,6 +62,19 @@ const UserHome = () => {
 
     fetchBlogs();
   }, []);
+
+  useEffect(() => {
+    if (auth.currentUser) {
+      setCurrentUserEmail(auth.currentUser.email || "");
+    }
+  }, []);
+
+  const handleDeleteBlog = async (blogId: string | undefined) => {
+    if (blogId) {
+      await deleteDoc(doc(db, "blogs", blogId));
+      setBlogs(blogs.filter((blog) => blog.id !== blogId));
+    }
+  };
 
   const handleEdit = (blog: BlogData) => {
     setEditMode(true);
@@ -134,20 +156,27 @@ const UserHome = () => {
             >
               {!editMode || editingBlog?.id !== blog.id ? (
                 <>
+                  <Carousel
+                    showThumbs={false}
+                    showStatus={false}
+                    dynamicHeight={true}
+                    className="w-full"
+                  >
+                    {blog.imageUrls.map((url, index) => (
+                      <div key={index}>
+                        <img
+                          src={url}
+                          alt={`${blog.title}-${index}`}
+                          className="w-full object-cover h-64"
+                        />
+                      </div>
+                    ))}
+                  </Carousel>
                   <h2 className="text-white text-2xl font-bold p-4">
                     {blog.title}
                   </h2>
                   <p className="text-white p-4 font-bold">{blog.description}</p>
-                  <div className="flex justify-center">
-                    {blog.imageUrls.map((url, index) => (
-                      <img
-                        key={index}
-                        src={url}
-                        alt={`${blog.title}-${index}`}
-                        className="w-32 h-32 object-cover inline-block mr-2 "
-                      />
-                    ))}
-                  </div>
+                  <div className="flex justify-center"></div>
                   <p className="text-white p-4 font-bold">
                     Price Range: {blog.priceRange}
                   </p>
@@ -161,12 +190,25 @@ const UserHome = () => {
                     Created By: {blog.userEmail}
                   </p>
 
-                  <button
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"
-                    onClick={() => handleEdit(blog)}
-                  >
-                    Edit
-                  </button>
+                  {blog.userEmail === currentUserEmail && (
+                    <>
+                      {/* Edit button */}
+                      <button
+                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 m-4"
+                        onClick={() => handleEdit(blog)}
+                      >
+                        Edit
+                      </button>
+
+                      {/* Delete button  */}
+                      <button
+                        className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mb-4"
+                        onClick={() => handleDeleteBlog(blog.id)}
+                      >
+                        Delete
+                      </button>
+                    </>
+                  )}
                 </>
               ) : (
                 // Edit mode
