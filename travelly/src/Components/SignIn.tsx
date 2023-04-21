@@ -6,6 +6,7 @@ function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
@@ -40,6 +41,7 @@ function SignIn() {
             className="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline"
             id="email"
             type="email"
+            required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
@@ -51,10 +53,22 @@ function SignIn() {
           <input
             className="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline"
             id="password"
-            type="password"
+            type={showPassword ? "text" : "password"}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
+        </div>
+        <div className="mb-4">
+          <label className="text-white font-bold" htmlFor="show-password">
+            <input
+              className="mr-2 leading-tight"
+              id="show-password"
+              type="checkbox"
+              checked={showPassword}
+              onChange={(e) => setShowPassword(e.target.checked)}
+            />
+            Show Password
+          </label>
         </div>
         <div className="flex items-center justify-center">
           <button
@@ -63,6 +77,12 @@ function SignIn() {
           >
             Sign In
           </button>
+          <Link
+            to="/signup"
+            className="text-blue-300 hover:text-blue-700 font-bold py-4 px-4 rounded focus:outline-none focus:shadow-outline"
+          >
+            Don't have an account yet? Sign up.
+          </Link>
         </div>
       </form>
     </div>

@@ -18,6 +18,7 @@ const Home = () => {
       missionSectionRef.current.scrollIntoView({ behavior: "smooth" });
     }
   };
+
   return (
     <div className="text-white ">
       <Navbar />
