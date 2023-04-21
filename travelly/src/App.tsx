@@ -1,4 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import About from "./Components/About";
+import ContactUs from "./Components/ContactUs";
 import CreateBlog from "./Components/CreateBlog";
 import Home from "./Components/Home";
 import Profile from "./Components/Profile";
@@ -16,6 +18,8 @@ function App() {
         <Route path="/userHome" element={<UserHome />} />
         <Route path="/createBlog" element={<CreateBlog />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contactUs" element={<ContactUs />} />
       </Routes>
     </BrowserRouter>
   );
