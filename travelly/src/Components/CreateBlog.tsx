@@ -82,7 +82,7 @@ function CreateBlog() {
   };
 
   const handleGoHome = () => {
-    return navigate("/userHome");
+    return navigate("/");
   };
 
   return (

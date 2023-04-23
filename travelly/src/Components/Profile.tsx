@@ -21,7 +21,7 @@ const Profile = () => {
   }, []);
 
   const handleGoHome = () => {
-    return navigate("/userHome");
+    return navigate("/");
   };
 
   const handleSignOut = async () => {

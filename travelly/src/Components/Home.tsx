@@ -1,11 +1,14 @@
-import { useRef } from "react";
+import { onAuthStateChanged } from "firebase/auth";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import { auth } from "../firebase";
 import "../index.css";
 import Navbar from "./Navbar";
 
 const Home = () => {
   const exploreSectionRef = useRef<HTMLHeadingElement>(null);
   const missionSectionRef = useRef<HTMLHeadingElement>(null);
+  const [loggedIn, setLoggedIn] = useState(false);
 
   const scrollToExploreSection = () => {
     if (exploreSectionRef.current) {
@@ -18,6 +21,18 @@ const Home = () => {
       missionSectionRef.current.scrollIntoView({ behavior: "smooth" });
     }
   };
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setLoggedIn(true);
+      } else {
+        setLoggedIn(false);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   return (
     <div className="text-white ">
@@ -76,7 +91,6 @@ const Home = () => {
             </button>
           </div>
         </div>
-
         <div className="h-screen flex items-center justify-center mt-[-13rem] md:mt-0 mb-[-14rem] md:mb-[-12rem] lg:mb-8">
           <div className="relative">
             <div className="absolute z-10 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-full overflow-hidden bg-gradient-to-r from-blue-500 to-white animate-gradient-x animate-pulsate w-72 h-72 md:w-96 md:h-96 lg:w-[45rem] lg:h-[45rem]">
@@ -93,7 +107,7 @@ const Home = () => {
                 </p>
                 <div className="inline-block">
                   <Link
-                    to="/signup"
+                    to={loggedIn ? "/createBlog" : "/signup"}
                     className="text-xs md:text-lg bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-3 sm:px-4 md:px-5 lg:px-6 rounded cursor-pointer whitespace-nowrap"
                     style={{ maxWidth: "95%" }}
                   >

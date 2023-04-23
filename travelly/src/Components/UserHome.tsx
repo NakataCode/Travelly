@@ -11,7 +11,7 @@ import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { auth, db, storage } from "../firebase";
 import { BlogData } from "../interfaces/blogData";
-import UserNavbar from "./UserNavbar";
+import Navbar from "./Navbar";
 
 const UserHome = () => {
   const [blogs, setBlogs] = useState<BlogData[]>([]);
@@ -144,7 +144,7 @@ const UserHome = () => {
 
   return (
     <div>
-      <UserNavbar />
+      <Navbar />
       <div className="bg-black pt-20 ">
         <div className="mx-auto max-w-4xl">
           {blogs.map((blog) => (
