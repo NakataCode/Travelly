@@ -143,7 +143,7 @@ const UserHome = () => {
   };
 
   return (
-    <div>
+    <div className="text-white">
       <Navbar />
       <div className="bg-black pt-20 ">
         <div className="mx-auto max-w-4xl">

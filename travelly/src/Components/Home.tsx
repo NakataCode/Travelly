@@ -41,7 +41,7 @@ const Home = () => {
         <svg className="absolute top-0 left-0 w-full h-full">
           <line
             x1="90%"
-            y1="9%"
+            y1="8.2%"
             x2="60%"
             y2="85%"
             stroke="white"
@@ -49,7 +49,7 @@ const Home = () => {
           />
           <line
             x1="10%"
-            y1="9%"
+            y1="8.2%"
             x2="40%"
             y2="85%"
             stroke="white"
@@ -171,14 +171,14 @@ const Home = () => {
           </p>
         </div>
       </div>
-      <div className="container mx-auto px-4 py-12 max-w-4xl">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="container mx-auto px-36 py-12 max-w-8xl">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-14">
           {/* First card */}
-          <div className="bg-blue-400 p-4 rounded-lg">
+          <div className="bg-blue-300 p-4 rounded-lg mb-6 pb-12 pt-8">
             <div className="mb-4 flex justify-center">
               <svg
-                width="24"
-                height="24"
+                width="32"
+                height="32"
                 viewBox="0 0 24 24"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
@@ -199,18 +199,18 @@ const Home = () => {
             </p>
           </div>
           {/* Second card */}
-          <div className="bg-blue-400 p-4 rounded-lg">
+          <div className="bg-blue-400 p-4 rounded-lg mb-6 pb-12 pt-8">
             <div className="mb-4 flex justify-center">
               <svg
-                width="24"
-                height="24"
+                width="32"
+                height="32"
                 viewBox="0 0 24 24"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
               >
                 <path
-                  fill-rule="evenodd"
-                  clip-rule="evenodd"
+                  fillRule="evenodd"
+                  clipRule="evenodd"
                   d="M4 9C4 11.9611 5.60879 14.5465 8 15.9297V15.9999C8 18.2091 9.79086 19.9999 12 19.9999C14.2091 19.9999 16 18.2091 16 15.9999V15.9297C18.3912 14.5465 20 11.9611 20 9C20 4.58172 16.4183 1 12 1C7.58172 1 4 4.58172 4 9ZM16 13.4722C17.2275 12.3736 18 10.777 18 9C18 5.68629 15.3137 3 12 3C8.68629 3 6 5.68629 6 9C6 10.777 6.7725 12.3736 8 13.4722L10 13.4713V16C10 17.1045 10.8954 17.9999 12 17.9999C13.1045 17.9999 14 17.1045 14 15.9999V13.4713L16 13.4722Z"
                   fill="currentColor"
                 />
@@ -230,18 +230,18 @@ const Home = () => {
             </p>
           </div>
           {/* Third card */}
-          <div className="bg-blue-400 p-4 rounded-lg">
+          <div className="bg-blue-300 p-4 rounded-lg mb-6 pb-12 pt-8">
             <div className="mb-4 flex justify-center">
               <svg
-                width="24"
-                height="24"
+                width="32"
+                height="32"
                 viewBox="0 0 24 24"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
               >
                 <path
-                  fill-rule="evenodd"
-                  clip-rule="evenodd"
+                  fillRule="evenodd"
+                  clipRule="evenodd"
                   d="M6.85327 8C6.85327 5.23858 9.09185 3 11.8533 3C14.6147 3 16.8533 5.23858 16.8533 8C16.8533 10.7614 14.6147 13 11.8533 13C9.09185 13 6.85327 10.7614 6.85327 8ZM11.8533 11C10.1964 11 8.85327 9.65685 8.85327 8C8.85327 6.34315 10.1964 5 11.8533 5C13.5101 5 14.8533 6.34315 14.8533 8C14.8533 9.65685 13.5101 11 11.8533 11Z"
                   fill="currentColor"
                 />
@@ -261,11 +261,11 @@ const Home = () => {
             </p>
           </div>
           {/* Fourth card */}
-          <div className="bg-blue-400 p-4 rounded-lg">
+          <div className="bg-blue-400 p-4 rounded-lg mb-6 pb-12 pt-8">
             <div className="mb-4 flex justify-center">
               <svg
-                width="24"
-                height="24"
+                width="32"
+                height="32"
                 viewBox="0 0 24 24"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
@@ -287,11 +287,11 @@ const Home = () => {
             </p>
           </div>
           {/* Fifth card */}
-          <div className="bg-blue-400 p-4 rounded-lg">
+          <div className="bg-blue-300 p-4 rounded-lg mb-6 pb-12 pt-8">
             <div className="mb-4 flex justify-center">
               <svg
-                width="24"
-                height="24"
+                width="32"
+                height="32"
                 viewBox="0 0 24 24"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
@@ -312,23 +312,24 @@ const Home = () => {
             </p>
           </div>
           {/* Sixth card */}
-          <div className="bg-blue-400 p-4 rounded-lg">
+          <div className="bg-blue-400 p-4 rounded-lg mb-6 pb-12 pt-8">
             <div className="mb-4 flex justify-center">
               <svg
-                width="24"
-                height="24"
+                width="32"
+                height="32"
                 viewBox="0 0 24 24"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
               >
                 <path
-                  fill-rule="evenodd"
-                  clip-rule="evenodd"
+                  fillRule="evenodd"
+                  clipRule="evenodd"
                   d="M7 14C8.10457 14 9 13.1046 9 12C9 10.8954 8.10457 10 7 10C5.89543 10 5 10.8954 5 12C5 13.1046 5.89543 14 7 14ZM10.4649 10C9.77325 8.8044 8.48056 8 7 8C5.13616 8 3.57006 9.27477 3.12602 11H2C1.44772 11 1 11.4477 1 12C1 12.5523 1.44772 13 2 13H3.12602C3.57006 14.7252 5.13616 16 7 16C9.20914 16 11 14.2091 11 12H13C13 14.2091 14.7909 16 17 16C18.8638 16 20.4299 14.7252 20.874 13H22C22.5523 13 23 12.5523 23 12C23 11.4477 22.5523 11 22 11H20.874C20.4299 9.27477 18.8638 8 17 8C15.5194 8 14.2267 8.8044 13.5351 10H10.4649ZM15 12C15 13.1046 15.8954 14 17 14C18.1046 14 19 13.1046 19 12C19 10.8954 18.1046 10 17 10C15.8954 10 15 10.8954 15 12Z"
                   fill="currentColor"
                 />
               </svg>
             </div>
+
             <h3 className="font-bold text-2xl mb-2 text-center">Art</h3>
             <hr className="w-full  underline" />
             <p className="font-bold">
@@ -341,8 +342,8 @@ const Home = () => {
         </div>
       </div>
       <section id="features">
-        <div className="container flex flex-col px-4 mx-auto mt-10 space-y-20 md:space-y-0 md:flex-row">
-          <div className="flex flex-col items-center space-y-8 md:w-1/2 ">
+        <div className="container flex flex-col px-4 mx-auto mt-10 space-y-20 lg:space-y-0 lg:flex-row">
+          <div className="flex flex-col items-center space-y-8 lg:w-1/2 ">
             <h2
               ref={missionSectionRef}
               className="max-w-md text-2xl md:text-4xl font-bold text-center md:text-left"
@@ -358,7 +359,7 @@ const Home = () => {
             </p>
           </div>
 
-          <div className="flex flex-col space-y-8 md:w-1/2">
+          <div className="flex flex-col space-y-8 lg:w-1/2">
             <div className="flex flex-col space-y-3 md:space-y-0 md:space-x-6 md:flex-row">
               <div className="rounded-l-full bg-brightRedSupLight md:bg-transparent">
                 <div className="flex items-center space-x-2">
