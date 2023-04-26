@@ -3,6 +3,8 @@ import {
   deleteDoc,
   doc,
   getDocs,
+  orderBy,
+  query,
   updateDoc,
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
@@ -37,7 +39,8 @@ const UserHome = () => {
   useEffect(() => {
     const fetchBlogs = async () => {
       const blogCollection = collection(db, "blogs");
-      const blogsSnapshot = await getDocs(blogCollection);
+      const blogQuery = query(blogCollection, orderBy("createdAt", "desc"));
+      const blogsSnapshot = await getDocs(blogQuery);
       const blogsData: Partial<BlogData>[] = blogsSnapshot.docs.map((doc) => {
         const data = doc.data();
         return {
@@ -143,16 +146,16 @@ const UserHome = () => {
   };
 
   return (
-    <div className="text-white">
+    <div className="text-white relative">
       <Navbar />
-      <div className="bg-black pt-20 ">
-        <div className="mx-auto max-w-4xl">
+      <div className="bg-user-Home bg-center bg-cover bg-fixed pt-20 ">
+        <div className="mx-auto px-4 sm:px-6 md:px-8 lg:px-0 max-w-4xl">
           {blogs.map((blog) => (
             <div
               key={blog.id}
-              className={`border border-white rounded-lg overflow-hidden mb-8 ${
+              className={`border border-white rounded-lg overflow-hidden mb-8 w-full sm:w-5/6 md:w-3/4 lg:w-full ${
                 editMode && editingBlog?.id === blog.id ? "bg-black" : ""
-              }`}
+              } mx-auto`}
             >
               {!editMode || editingBlog?.id !== blog.id ? (
                 <>
@@ -172,41 +175,55 @@ const UserHome = () => {
                       </div>
                     ))}
                   </Carousel>
-                  <h2 className="text-white text-2xl font-bold p-4">
-                    {blog.title}
-                  </h2>
-                  <p className="text-white p-4 font-bold">{blog.description}</p>
-                  <div className="flex justify-center"></div>
-                  <p className="text-white p-4 font-bold">
-                    Price Range: {blog.priceRange}
-                  </p>
-                  <p className="text-white p-4 font-bold">
-                    Country: {blog.country}
-                  </p>
-                  <p className="text-white p-4 font-bold">
-                    Created At: {blog.createdAt}
-                  </p>
-                  <p className="text-white font-bold p-4">
-                    Created By: {blog.userEmail}
-                  </p>
+                  <div className="backdrop-blur-lg backdrop-saturate-200 bg-opacity-0 bg-white rounded-lg border border-opacity-30 border-gray-300 p-8">
+                    <h2 className="text-white text-2xl font-bold p-4">
+                      {blog.title}
+                    </h2>
+                    <hr className="w-full underline" />
 
-                  {blog.userEmail === currentUserEmail && (
-                    <>
-                      <button
-                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 m-4"
-                        onClick={() => handleEdit(blog)}
-                      >
-                        Edit
-                      </button>
+                    <p className="text-white p-4 font-bold">
+                      {blog.description}
+                    </p>
+                    <div className="flex justify-center"></div>
+                    <p className="text-white p-4 font-bold">
+                      Price Range: {blog.priceRange}
+                    </p>
+                    <p className="text-white p-4 font-bold">
+                      Country: {blog.country}
+                    </p>
+                    <p className="text-white p-4 font-bold">
+                      Posted:{" "}
+                      {new Intl.DateTimeFormat("en-US", {
+                        year: "numeric",
+                        month: "long",
+                        day: "2-digit",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: true,
+                      }).format(new Date(blog.createdAt))}
+                    </p>
+                    <p className="text-white font-bold p-4">
+                      Created By: {blog.userEmail}
+                    </p>
+                    <hr className="w-full underline" />
 
-                      <button
-                        className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mb-4"
-                        onClick={() => handleDeleteBlog(blog.id)}
-                      >
-                        Delete
-                      </button>
-                    </>
-                  )}
+                    {blog.userEmail === currentUserEmail && (
+                      <>
+                        <button
+                          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 m-4"
+                          onClick={() => handleEdit(blog)}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mb-4"
+                          onClick={() => handleDeleteBlog(blog.id)}
+                        >
+                          Delete
+                        </button>
+                      </>
+                    )}
+                  </div>
                 </>
               ) : (
                 <>

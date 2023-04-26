@@ -25,7 +25,7 @@ function SignIn() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-black bg-signUp-In bg-center bg-cover bg-no-repeat">
+    <div className="flex flex-col items-center justify-center h-screen bg-black bg-sign-In bg-center bg-cover bg-no-repeat">
       <Link
         to="/"
         className="absolute top-4 left-4 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
@@ -36,7 +36,7 @@ function SignIn() {
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label
-              className="block text-white font-bold mb-2 float-left bg-blue-500 rounded-xl py-1 px-2"
+              className="block text-white font-bold mb-4 float-left bg-blue-500 rounded-xl py-1 px-2"
               htmlFor="email"
             >
               Email
@@ -52,7 +52,7 @@ function SignIn() {
           </div>
           <div className="mb-4">
             <label
-              className="block text-white font-bold mb-2 float-right bg-blue-500 rounded-xl py-1 px-2"
+              className="block text-white font-bold mb-4 float-right bg-blue-500 rounded-xl py-1 px-2"
               htmlFor="password"
             >
               Password
