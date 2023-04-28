@@ -8,6 +8,7 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import KUTE from "kute.js";
 import { useEffect, useState } from "react";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
@@ -145,10 +146,53 @@ const UserHome = () => {
     setEditingBlog(null);
   };
 
+  useEffect(() => {
+    const tween = KUTE.fromTo(
+      "#blob1",
+      { path: "#blob1" },
+      { path: "#blob2" },
+      { repeat: 999, duration: 3000, yoyo: true }
+    );
+    tween.start();
+
+    return () => {
+      tween.stop();
+    };
+  }, []);
+
   return (
     <div className="text-white relative">
       <Navbar />
-      <div className="bg-user-Home bg-center bg-cover bg-fixed pt-20 ">
+      <div className="bg-center bg-cover bg-fixed pt-20 ">
+        <div className="mt-72 fixed inset-0 z-[-1] flex items-center justify-center">
+          <svg
+            id="visual"
+            viewBox="0 0 900 600"
+            width="1300"
+            height="1000"
+            xmlns="http://www.w3.org/2000/svg"
+            xmlnsXlink="http://www.w3.org/1999/xlink"
+            version="1.1"
+          >
+            <g transform="translate(469.3861944769063 297.1543404854216)">
+              <path
+                id="blob1"
+                d="M129.4 -188.4C144.8 -141.3 118.6 -78.8 117.3 -29.1C116.1 20.6 139.9 57.6 135.5 90.5C131.1 123.5 98.6 152.4 49.9 195.4C1.3 238.4 -63.5 295.4 -106.3 283.5C-149 271.6 -169.8 190.8 -170.1 128.2C-170.3 65.7 -150.2 21.4 -154.7 -40.2C-159.3 -101.8 -188.6 -180.8 -166.9 -226.8C-145.3 -272.8 -72.6 -285.9 -7.8 -276.6C57 -267.3 114 -235.5 129.4 -188.4"
+                fill="#1a78eb"
+              ></path>
+            </g>
+            <g
+              transform="translate(431.89094927070846 359.61294402405747)"
+              className="hidden"
+            >
+              <path
+                id="blob2"
+                d="M95.1 -160.2C110.5 -100.4 101.4 -58.3 133.4 -4.6C165.5 49.1 238.6 114.6 232.5 142.7C226.3 170.7 140.9 161.5 77.5 162.8C14.1 164.1 -27.1 176 -74.9 172.9C-122.7 169.8 -177 151.6 -192 115.7C-207 79.7 -182.8 25.9 -159.9 -15C-137 -55.9 -115.4 -83.9 -89 -141.7C-62.6 -199.6 -31.3 -287.3 4.3 -292.4C39.9 -297.5 79.7 -220 95.1 -160.2"
+                fill="#1a78eb"
+              ></path>
+            </g>
+          </svg>
+        </div>
         <div className="mx-auto px-4 sm:px-6 md:px-8 lg:px-0 max-w-4xl">
           {blogs.map((blog) => (
             <div
