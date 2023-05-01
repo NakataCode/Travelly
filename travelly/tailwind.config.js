@@ -13,6 +13,7 @@ export default {
         "user-Home": "url('/images/userHome2.svg')",
         "create-Blog": "url('/images/userHome2.svg')",
         "profile-circle": "url('/images/profileBlob.svg')",
+        "contact-Us": "url('/images/contactUsBgg.svg')",
       },
     },
   },

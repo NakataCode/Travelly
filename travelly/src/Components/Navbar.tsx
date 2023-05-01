@@ -47,7 +47,7 @@ const Navbar = () => {
         <div className="flex items-center justify-between">
           <div className="pt-2 text-3xl font-bold">
             <Link
-              className={`rounded px-2 hover:bg-blue-400 transition-colors duration-300`}
+              className="rounded px-2 hover:bg-blue-400 transition-colors duration-300"
               to="/"
             >
               Travelly
