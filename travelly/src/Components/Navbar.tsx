@@ -68,27 +68,20 @@ const Navbar = () => {
           >
             <div className="grid grid-cols-1 gap-y-2 lg:flex lg:space-x-8 lg:gap-y-0 pt-4 lg:pt-4 text-xl lg:text-lg relative z-10 font-bold mt-[-0.8rem]">
               <div className="transition-colors duration-300 px-36 lg:px-0">
-                <span className={`${menuOpen ? "hidden" : ""} cursor-default`}>
-                  /
-                </span>
                 <Link
                   className={`block lg:inline-block rounded mx-2 px-4 hover:bg-blue-400 transition-colors duration-300 text-center my-4 lg:my-0`}
                   to="/about"
                 >
                   About
                 </Link>
-                <span className={`${menuOpen ? "hidden" : ""} cursor-default`}>
-                  /
-                </span>
+
                 <Link
                   className={`block lg:inline-block rounded mx-2 px-4 hover:bg-blue-400 transition-colors duration-300 text-center my-4 lg:my-0`}
                   to="/contactUs"
                 >
                   Contact us
                 </Link>
-                <span className={`${menuOpen ? "hidden" : ""} cursor-default`}>
-                  /
-                </span>
+
                 {loggedIn ? (
                   <>
                     <Link
@@ -97,33 +90,18 @@ const Navbar = () => {
                     >
                       Create blog
                     </Link>
-                    <span
-                      className={`${menuOpen ? "hidden" : ""} cursor-default`}
-                    >
-                      /
-                    </span>
                     <Link
                       className={`block lg:inline-block rounded mx-2 px-4 hover:bg-blue-400 transition-colors duration-300 text-center my-4 lg:my-0`}
                       to="/profile"
                     >
                       Profile
                     </Link>
-                    <span
-                      className={`${menuOpen ? "hidden" : ""} cursor-default`}
-                    >
-                      /
-                    </span>
                     <Link
                       className={`block lg:inline-block rounded mx-2 px-4 hover:bg-blue-400 transition-colors duration-300 text-center my-4 lg:my-0`}
                       to="/userHome"
                     >
                       Travel blogs
                     </Link>
-                    <span
-                      className={`${menuOpen ? "hidden" : ""} cursor-default`}
-                    >
-                      /
-                    </span>
                   </>
                 ) : (
                   <>
@@ -133,22 +111,12 @@ const Navbar = () => {
                     >
                       Sign up
                     </Link>
-                    <span
-                      className={`${menuOpen ? "hidden" : ""} cursor-default`}
-                    >
-                      /
-                    </span>
                     <Link
                       className={`block lg:inline-block rounded mx-2 px-4 hover:bg-blue-400 transition-colors duration-300 text-center my-4 lg:my-0`}
                       to="/signin"
                     >
                       Sign in
                     </Link>
-                    <span
-                      className={`${menuOpen ? "hidden" : ""} cursor-default`}
-                    >
-                      /
-                    </span>
                   </>
                 )}
               </div>

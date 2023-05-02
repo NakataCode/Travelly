@@ -1,12 +1,30 @@
 import { addDoc, collection, getFirestore } from "firebase/firestore";
 import KUTE from "kute.js";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
 const ContactUs = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [question, setQuestion] = useState("");
+  const [options, setOptions] = useState<string[]>([]);
+
+  const checkboxesRef = useRef<HTMLInputElement[]>([]);
+
+  const registerCheckbox = (ref: HTMLInputElement) => {
+    checkboxesRef.current.push(ref);
+  };
+
+  const handleCheckboxChange = (e: any) => {
+    const { value, checked } = e.target;
+    setOptions((prevOptions: string[]) => {
+      if (checked) {
+        return [...prevOptions, value];
+      } else {
+        return prevOptions.filter((option) => option !== value);
+      }
+    });
+  };
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
@@ -15,6 +33,7 @@ const ContactUs = () => {
       name,
       email,
       question,
+      options,
     };
 
     try {
@@ -23,8 +42,11 @@ const ContactUs = () => {
       setName("");
       setEmail("");
       setQuestion("");
+      setOptions([]);
+
+      checkboxesRef.current.forEach((checkbox) => (checkbox.checked = false));
     } catch (e) {
-      console.error("Error adding document: ", e);
+      console.log("An error occured, please try again", e);
     }
   };
 
@@ -217,18 +239,31 @@ const ContactUs = () => {
           <div className="flex flex-col items-center lg:flex-row lg:justify-between">
             <div className="w-full lg:w-5/12 text-white my-12">
               <h1 className="text-4xl font-bold mb-16">
-                Have a travel experience? We would love to help.
+                Have a{" "}
+                <span className="bg-blue-500 rounded-xl py-0 px-2 m-2">
+                  travel experience ?
+                </span>
+                We would love to help.
               </h1>
               <p className="mt-4 text-lg font-bold mb-16">
                 Our team is ready to help you with any questions or concerns you
                 may have about your travel plans. Please fill out the form, and
-                we will get back to you as soon as possible.
+                we will get back to you
+                <span className="bg-blue-500 rounded-xl py-0 px-2 m-2">
+                  as soon as possible.
+                </span>
               </p>
               <p className="mt-4 text-lg font-bold">support@gmail.com</p>
             </div>
-            <form onSubmit={handleSubmit} className="w-full lg:w-5/12">
+            <form onSubmit={handleSubmit} className="w-full lg:w-5/12 mt-16">
               <div className="bg-white bg-opacity-10 backdrop-blur-md p-6 rounded-lg flex flex-col items-center border border-white border-opacity-25">
                 <div className="mb-4 w-full">
+                  <h2 className="text-white font-bold text-3xl flex justify-center">
+                    Contact form
+                  </h2>
+                  <p className="text-white font-bold text-md flex justify-center mb-8">
+                    Tells us more about yourself and what you have in mind.
+                  </p>
                   <label
                     className="block text-white font-bold mb-2 float-left bg-blue-500 rounded-xl py-1 px-2"
                     htmlFor="name"
@@ -272,9 +307,74 @@ const ContactUs = () => {
                     required
                   ></textarea>
                 </div>
+                <p className="text-white font-bold text-md bg-blue-500 rounded-xl py-1 px-2">
+                  How can we help?
+                </p>
+                <div className="grid grid-cols-2 grid-rows-3 gap-4 my-4 font-bold text-white">
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      className="mr-2"
+                      value="Travel experience"
+                      ref={registerCheckbox}
+                      onChange={handleCheckboxChange}
+                    />
+                    Travel experience
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      className="mr-2"
+                      value="Country selection"
+                      ref={registerCheckbox}
+                      onChange={handleCheckboxChange}
+                    />
+                    Country selection
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      className="mr-2"
+                      value="Bad attitude"
+                      ref={registerCheckbox}
+                      onChange={handleCheckboxChange}
+                    />
+                    Bad attitude
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      className="mr-2"
+                      value="Dangerous place"
+                      ref={registerCheckbox}
+                      onChange={handleCheckboxChange}
+                    />
+                    Dangerous place
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      className="mr-2"
+                      value="Low entertainment"
+                      ref={registerCheckbox}
+                      onChange={handleCheckboxChange}
+                    />
+                    Low entertainment
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      className="mr-2"
+                      value="Discrepancy"
+                      ref={registerCheckbox}
+                      onChange={handleCheckboxChange}
+                    />
+                    Discrepancy
+                  </label>
+                </div>
                 <button
                   type="submit"
-                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-44 xl:px-52 2xl:px-[17rem] rounded mt-4"
                 >
                   Send
                 </button>
