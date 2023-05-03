@@ -90,7 +90,6 @@ const ContactUs = () => {
       tween4.stop();
     };
   }, []);
-
   return (
     <div className=" bg-center  bg-cover bg-no-repeat relative">
       <div className="absolute inset-0 z-[-1]">
@@ -310,61 +309,61 @@ const ContactUs = () => {
                 <p className="text-white font-bold text-md bg-blue-500 rounded-xl py-1 px-2">
                   How can we help?
                 </p>
-                <div className="grid grid-cols-2 grid-rows-3 gap-4 my-4 font-bold text-white">
-                  <label className="flex items-center">
+                <div className="grid grid-cols-2 grid-rows-3 gap-4 my-6 font-bold text-white">
+                  <label className="flex items-center cursor-pointer">
                     <input
                       type="checkbox"
-                      className="mr-2"
+                      className="mr-2 relative h-[1.1rem] w-[1.1rem] cursor-pointer appearance-none rounded-md border border-blue-gray-200 transition-all before:absolute before:top-2/4 before:left-2/4 before:block before:h-12 before:w-12 before:-translate-y-2/4 before:-translate-x-2/4 before:rounded-full before:bg-blue-gray-500 before:opacity-0 before:transition-opacity checked:border-blue-500 checked:bg-blue-500 checked:before:bg-blue-500 hover:before:opacity-10"
                       value="Travel experience"
                       ref={registerCheckbox}
                       onChange={handleCheckboxChange}
                     />
                     Travel experience
                   </label>
-                  <label className="flex items-center">
+                  <label className="flex items-center cursor-pointer">
                     <input
                       type="checkbox"
-                      className="mr-2"
+                      className="mr-2 relative h-[1.1rem] w-[1.1rem] cursor-pointer appearance-none rounded-md border border-blue-gray-200 transition-all before:absolute before:top-2/4 before:left-2/4 before:block before:h-12 before:w-12 before:-translate-y-2/4 before:-translate-x-2/4 before:rounded-full before:bg-blue-gray-500 before:opacity-0 before:transition-opacity checked:border-blue-500 checked:bg-blue-500 checked:before:bg-blue-500 hover:before:opacity-10"
                       value="Country selection"
                       ref={registerCheckbox}
                       onChange={handleCheckboxChange}
                     />
                     Country selection
                   </label>
-                  <label className="flex items-center">
+                  <label className="flex items-center cursor-pointer">
                     <input
                       type="checkbox"
-                      className="mr-2"
+                      className="mr-2 relative h-[1.1rem] w-[1.1rem] cursor-pointer appearance-none rounded-md border border-blue-gray-200 transition-all before:absolute before:top-2/4 before:left-2/4 before:block before:h-12 before:w-12 before:-translate-y-2/4 before:-translate-x-2/4 before:rounded-full before:bg-blue-gray-500 before:opacity-0 before:transition-opacity checked:border-blue-500 checked:bg-blue-500 checked:before:bg-blue-500 hover:before:opacity-10"
                       value="Bad attitude"
                       ref={registerCheckbox}
                       onChange={handleCheckboxChange}
                     />
                     Bad attitude
                   </label>
-                  <label className="flex items-center">
+                  <label className="flex items-center cursor-pointer">
                     <input
                       type="checkbox"
-                      className="mr-2"
+                      className="mr-2 relative h-[1.1rem] w-[1.1rem] cursor-pointer appearance-none rounded-md border border-blue-gray-200 transition-all before:absolute before:top-2/4 before:left-2/4 before:block before:h-12 before:w-12 before:-translate-y-2/4 before:-translate-x-2/4 before:rounded-full before:bg-blue-gray-500 before:opacity-0 before:transition-opacity checked:border-blue-500 checked:bg-blue-500 checked:before:bg-blue-500 hover:before:opacity-10"
                       value="Dangerous place"
                       ref={registerCheckbox}
                       onChange={handleCheckboxChange}
                     />
                     Dangerous place
                   </label>
-                  <label className="flex items-center">
+                  <label className="flex items-center cursor-pointer">
                     <input
                       type="checkbox"
-                      className="mr-2"
+                      className="mr-2 relative h-[1.1rem] w-[1.1rem] cursor-pointer appearance-none rounded-md border border-blue-gray-200 transition-all before:absolute before:top-2/4 before:left-2/4 before:block before:h-12 before:w-12 before:-translate-y-2/4 before:-translate-x-2/4 before:rounded-full before:bg-blue-gray-500 before:opacity-0 before:transition-opacity checked:border-blue-500 checked:bg-blue-500 checked:before:bg-blue-500 hover:before:opacity-10"
                       value="Low entertainment"
                       ref={registerCheckbox}
                       onChange={handleCheckboxChange}
                     />
                     Low entertainment
                   </label>
-                  <label className="flex items-center">
+                  <label className="flex items-center cursor-pointer">
                     <input
                       type="checkbox"
-                      className="mr-2"
+                      className="mr-2 relative h-[1.1rem] w-[1.1rem] cursor-pointer appearance-none rounded-md border border-blue-gray-200 transition-all before:absolute before:top-2/4 before:left-2/4 before:block before:h-12 before:w-12 before:-translate-y-2/4 before:-translate-x-2/4 before:rounded-full before:bg-blue-gray-500 before:opacity-0 before:transition-opacity checked:border-blue-500 checked:bg-blue-500 checked:before:bg-blue-500 hover:before:opacity-10"
                       value="Discrepancy"
                       ref={registerCheckbox}
                       onChange={handleCheckboxChange}

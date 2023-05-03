@@ -16,7 +16,7 @@ import { auth, db, storage } from "../firebase";
 import { BlogData } from "../interfaces/blogData";
 import Navbar from "./Navbar";
 
-const UserHome = () => {
+const userHome = () => {
   const [blogs, setBlogs] = useState<BlogData[]>([]);
   const [editMode, setEditMode] = useState(false);
   const [editingBlog, setEditingBlog] = useState<BlogData | null>(null);
@@ -24,6 +24,8 @@ const UserHome = () => {
   const [updatedImages, setUpdatedImages] = useState<File[]>([]);
   const [updatedPriceRange, setUpdatedPriceRange] = useState("");
   const [currentUserEmail, setCurrentUserEmail] = useState("");
+  const [blogsUpdated, setBlogsUpdated] = useState(false);
+  const [updatingBlog, setUpdatingBlog] = useState(false);
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
@@ -50,28 +52,16 @@ const UserHome = () => {
         } as Partial<BlogData>;
       });
 
-      setBlogs(
-        blogsData.filter((blog) => {
-          return (
-            blog.title &&
-            blog.description &&
-            blog.imageUrls &&
-            blog.priceRange &&
-            blog.country &&
-            blog.createdAt
-          );
-        }) as BlogData[]
-      );
+      setBlogs(blogsData as BlogData[]);
     };
-
     fetchBlogs();
-  }, []);
+  }, [blogsUpdated, updatingBlog]);
 
   useEffect(() => {
     if (auth.currentUser) {
       setCurrentUserEmail(auth.currentUser.email || "");
     }
-  }, []);
+  }, [auth.currentUser]);
 
   const handleDeleteBlog = async (blogId: string | undefined) => {
     if (blogId) {
@@ -112,29 +102,49 @@ const UserHome = () => {
   const handleConfirmChanges = async () => {
     if (!editingBlog || !editingBlog.id) return;
 
-    const imageUrls = await uploadAndUpdateImages(
-      updatedImages,
-      editingBlog.id
-    );
+    const newImageUrls =
+      updatedImages.length > 0
+        ? await uploadAndUpdateImages(updatedImages, editingBlog.id)
+        : editingBlog.imageUrls;
 
-    await updateDoc(doc(db, "blogs", editingBlog.id), {
-      ...updatedBlogData,
-      imageUrls,
-      priceRange: updatedPriceRange,
-    });
+    const isValid =
+      updatedBlogData.title &&
+      updatedBlogData.description &&
+      updatedPriceRange &&
+      updatedBlogData.country &&
+      editingBlog.createdAt &&
+      (newImageUrls === undefined || (newImageUrls && newImageUrls.length > 0));
 
-    setBlogs(
-      blogs.map((blog) =>
-        blog.id === editingBlog.id
-          ? {
-              ...editingBlog,
-              ...updatedBlogData,
-              imageUrls,
-              priceRange: updatedPriceRange,
-            }
-          : blog
-      )
-    );
+    if (isValid) {
+      await updateDoc(doc(db, "blogs", editingBlog.id), {
+        ...updatedBlogData,
+        imageUrls: newImageUrls,
+        priceRange: updatedPriceRange,
+      });
+
+      setBlogs(
+        blogs.map((blog) =>
+          blog.id === editingBlog.id
+            ? {
+                ...editingBlog,
+                ...updatedBlogData,
+                imageUrls: newImageUrls,
+                priceRange: updatedPriceRange,
+              }
+            : blog
+        )
+      );
+      setUpdatingBlog(false);
+      setBlogsUpdated(!blogsUpdated);
+    } else {
+      console.log("Invalid blog update:", {
+        ...editingBlog,
+        ...updatedBlogData,
+        imageUrls: newImageUrls,
+        priceRange: updatedPriceRange,
+      });
+    }
+
     setEditMode(false);
     setEditingBlog(null);
     setUpdatedImages([]);
@@ -193,92 +203,111 @@ const UserHome = () => {
             </g>
           </svg>
         </div>
-        <div className="mx-auto px-4 sm:px-6 md:px-8 lg:px-0 max-w-4xl">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full mx-auto max-w-6xl rounded-xl bg-clip-border shadow-lg">
           {blogs.map((blog) => (
-            <div
-              key={blog.id}
-              className={`border border-white rounded-lg overflow-hidden mb-8 w-full sm:w-5/6 md:w-3/4 lg:w-full ${
-                editMode && editingBlog?.id === blog.id ? "bg-black" : ""
-              } mx-auto`}
-            >
-              {!editMode || editingBlog?.id !== blog.id ? (
-                <>
-                  <Carousel
-                    showThumbs={false}
-                    showStatus={false}
-                    dynamicHeight={true}
-                    className="w-full"
-                  >
-                    {blog.imageUrls.map((url, index) => (
-                      <div key={index}>
-                        <img
-                          src={url}
-                          alt={`${blog.title}-${index}`}
-                          className="w-full object-cover h-64"
+            <div key={blog.id} className="">
+              <div className="relative flex w-full max-w-[34rem] flex-col rounded-xl bg-white bg-opacity-10 backdrop-blur-md p-2 border border-white border-opacity-25">
+                <Carousel
+                  showThumbs={false}
+                  showStatus={false}
+                  dynamicHeight={true}
+                  className="w-full"
+                >
+                  {(blog.imageUrls && blog.imageUrls.length > 0
+                    ? blog.imageUrls
+                    : ["default-image-url"]
+                  ).map((url, index) => (
+                    <div
+                      key={index}
+                      className="relative mx-4 mt-4 overflow-hidden rounded-xl bg-blue-gray-500 bg-clip-border text-white shadow-lg shadow-blue-gray-500/40"
+                    >
+                      {editMode && editingBlog && editingBlog.id === blog.id ? (
+                        <input
+                          type="file"
+                          multiple
+                          onChange={handleImageChange}
+                          accept="image/*"
+                          className="block w-full p-2 border border-gray-300 rounded mb-4 m-auto max-w-3xl"
                         />
-                      </div>
-                    ))}
-                  </Carousel>
-                  <div className="backdrop-blur-lg backdrop-saturate-200 bg-opacity-0 bg-white rounded-lg border border-opacity-30 border-gray-300 p-8">
-                    <h2 className="text-white text-2xl font-bold p-4">
-                      {blog.title}
-                    </h2>
-                    <hr className="w-full underline" />
-
-                    <p className="text-white p-4 font-bold">
-                      {blog.description}
-                    </p>
-                    <div className="flex justify-center"></div>
-                    <p className="text-white p-4 font-bold">
-                      Price Range: {blog.priceRange}
-                    </p>
-                    <p className="text-white p-4 font-bold">
-                      Country: {blog.country}
-                    </p>
-                    <p className="text-white p-4 font-bold">
-                      Posted:{" "}
-                      {new Intl.DateTimeFormat("en-US", {
-                        year: "numeric",
-                        month: "long",
-                        day: "2-digit",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        hour12: true,
-                      }).format(new Date(blog.createdAt))}
-                    </p>
-                    <p className="text-white font-bold p-4">
-                      Created By: {blog.userEmail}
-                    </p>
-                    <hr className="w-full underline" />
-
-                    {blog.userEmail === currentUserEmail && (
+                      ) : (
+                        <>
+                          <img
+                            src={url}
+                            alt="blog"
+                            className="w-32 h-[22rem] object-cover"
+                          />
+                          <div className="to-bg-black-10 absolute inset-0 h-full w-full bg-gradient-to-tr from-transparent via-transparent to-black/60"></div>
+                          <button
+                            className="!absolute top-4 right-4 h-8 max-h-[32px] w-8 max-w-[32px] select-none rounded-full text-center align-middle font-sans text-xs font-medium uppercase text-red-500 transition-all hover:bg-red-500/10 active:bg-red-500/30 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                            type="button"
+                            data-ripple-dark="true"
+                          >
+                            <span className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 transform">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                fill="currentColor"
+                                aria-hidden="true"
+                                className="h-6 w-6"
+                              >
+                                <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z"></path>
+                              </svg>
+                            </span>
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  ))}
+                </Carousel>
+                <div className="p-6">
+                  <div className="mb-3 flex items-center justify-between">
+                    {editMode && editingBlog && editingBlog.id === blog.id ? (
+                      <input
+                        type="text"
+                        name="title"
+                        placeholder="title"
+                        value={updatedBlogData.title}
+                        onChange={handleChange}
+                        className="block w-full p-2 border border-gray-300 rounded mb-4 m-auto max-w-3xl"
+                      />
+                    ) : (
                       <>
-                        <button
-                          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 m-4"
-                          onClick={() => handleEdit(blog)}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mb-4"
-                          onClick={() => handleDeleteBlog(blog.id)}
-                        >
-                          Delete
-                        </button>
+                        <h5 className="block font-sans text-xl font-medium leading-snug tracking-normal text-blue-gray-900 antialiased">
+                          {blog.title}
+                        </h5>
+                        <p className="flex items-center gap-1.5 font-sans text-base font-normal leading-relaxed text-blue-gray-900 antialiased">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                            aria-hidden="true"
+                            className="-mt-0.5 h-5 w-5 text-yellow-400"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z"
+                              clipRule="evenodd"
+                            ></path>
+                          </svg>
+                          5.0
+                        </p>
                       </>
                     )}
                   </div>
-                </>
-              ) : (
-                <>
-                  <div className="p-4">
+                  {editMode && editingBlog && editingBlog.id === blog.id ? (
                     <input
                       type="text"
-                      name="title"
-                      value={updatedBlogData.title}
+                      name="country"
+                      value={updatedBlogData.country}
                       onChange={handleChange}
                       className="block w-full p-2 border border-gray-300 rounded mb-4 m-auto max-w-3xl"
                     />
+                  ) : (
+                    <h3 className="block font-sans text-md font-medium leading-snug tracking-normal text-blue-gray-900 antialiased mb-2 mt-[-0.7rem]">
+                      {blog.country}
+                    </h3>
+                  )}
+                  {editMode && editingBlog && editingBlog.id === blog.id ? (
                     <input
                       type="text"
                       name="description"
@@ -286,12 +315,12 @@ const UserHome = () => {
                       onChange={handleChange}
                       className="block w-full p-2 border border-gray-300 rounded mb-4 m-auto max-w-3xl"
                     />
-                    <input
-                      type="file"
-                      multiple
-                      onChange={handleImageChange}
-                      className="block w-full p-2 border border-gray-300 rounded mb-4 m-auto max-w-3xl"
-                    />
+                  ) : (
+                    <p className="block font-sans text-base font-light leading-relaxed text-white  antialiased">
+                      {blog.description}
+                    </p>
+                  )}
+                  {editMode && editingBlog && editingBlog.id === blog.id ? (
                     <input
                       type="text"
                       name="priceRange"
@@ -300,23 +329,122 @@ const UserHome = () => {
                       placeholder="Price Range"
                       className="block w-full p-2 border border-gray-300 rounded mb-4 m-auto max-w-3xl"
                     />
-                    <div className="flex justify-center space-x-24">
-                      <button
-                        className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mb-4"
-                        onClick={handleConfirmChanges}
+                  ) : (
+                    <p className="block font-sans text-base font-light leading-relaxed text-white antialiased">
+                      Price range: {blog.priceRange}
+                    </p>
+                  )}
+
+                  <p className="block font-sans text-base font-light leading-relaxed text-white antialiased">
+                    Posted:{" "}
+                    {new Intl.DateTimeFormat("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "2-digit",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hour12: true,
+                    }).format(new Date(blog.createdAt))}
+                  </p>
+                  <h3 className="block font-sans text-md font-medium leading-snug tracking-normal text-blue-gray-900 antialiased mt-2">
+                    Created by: {blog.userEmail}
+                  </h3>
+                  <div className="flex justify-center mt-8  flex-wrap items-center gap-3">
+                    <span
+                      data-tooltip-target="wifi"
+                      className="cursor-pointer rounded-full border border-pink-500/5 bg-pink-500/5 p-3 text-white transition-colors hover:border-pink-500/10 hover:bg-pink-500/10 hover:!opacity-100 group-hover:opacity-70"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                        aria-hidden="true"
+                        className="h-5 w-5"
                       >
-                        Confirm Changes
-                      </button>
-                      <button
-                        className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mb-4"
-                        onClick={handleDiscardChanges}
+                        <path
+                          fillRule="evenodd"
+                          d="M1.371 8.143c5.858-5.857 15.356-5.857 21.213 0a.75.75 0 010 1.061l-.53.53a.75.75 0 01-1.06 0c-4.98-4.979-13.053-4.979-18.032 0a.75.75 0 01-1.06 0l-.53-.53a.75.75 0 010-1.06zm3.182 3.182c4.1-4.1 10.749-4.1 14.85 0a.75.75 0 010 1.061l-.53.53a.75.75 0 01-1.062 0 8.25 8.25 0 00-11.667 0 .75.75 0 01-1.06 0l-.53-.53a.75.75 0 010-1.06zm3.204 3.182a6 6 0 018.486 0 .75.75 0 010 1.061l-.53.53a.75.75 0 01-1.061 0 3.75 3.75 0 00-5.304 0 .75.75 0 01-1.06 0l-.53-.53a.75.75 0 010-1.06zm3.182 3.182a1.5 1.5 0 012.122 0 .75.75 0 010 1.061l-.53.53a.75.75 0 01-1.061 0l-.53-.53a.75.75 0 010-1.06z"
+                          clipRule="evenodd"
+                        ></path>
+                      </svg>
+                    </span>
+
+                    <span
+                      data-tooltip-target="bedrooms"
+                      className="cursor-pointer rounded-full border border-pink-500/5 bg-pink-500/5 p-3 text-white transition-colors hover:border-pink-500/10 hover:bg-pink-500/10 hover:!opacity-100 group-hover:opacity-70"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                        aria-hidden="true"
+                        className="h-5 w-5"
                       >
-                        Discard Changes
-                      </button>
-                    </div>
+                        <path d="M11.47 3.84a.75.75 0 011.06 0l8.69 8.69a.75.75 0 101.06-1.06l-8.689-8.69a2.25 2.25 0 00-3.182 0l-8.69 8.69a.75.75 0 001.061 1.06l8.69-8.69z"></path>
+                        <path d="M12 5.432l8.159 8.159c.03.03.06.058.091.086v6.198c0 1.035-.84 1.875-1.875 1.875H15a.75.75 0 01-.75-.75v-4.5a.75.75 0 00-.75-.75h-3a.75.75 0 00-.75.75V21a.75.75 0 01-.75.75H5.625a1.875 1.875 0 01-1.875-1.875v-6.198a2.29 2.29 0 00.091-.086L12 5.43z"></path>
+                      </svg>
+                    </span>
+
+                    <span
+                      data-tooltip-target="fire"
+                      className="cursor-pointer rounded-full border border-pink-500/5 bg-pink-500/5 p-3 text-white  transition-colors hover:border-pink-500/10 hover:bg-pink-500/10 hover:!opacity-100 group-hover:opacity-70"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                        aria-hidden="true"
+                        className="h-5 w-5"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M12.963 2.286a.75.75 0 00-1.071-.136 9.742 9.742 0 00-3.539 6.177A7.547 7.547 0 016.648 6.61a.75.75 0 00-1.152-.082A9 9 0 1015.68 4.534a7.46 7.46 0 01-2.717-2.248zM15.75 14.25a3.75 3.75 0 11-7.313-1.172c.628.465 1.35.81 2.133 1a5.99 5.99 0 011.925-3.545 3.75 3.75 0 013.255 3.717z"
+                          clipRule="evenodd"
+                        ></path>
+                      </svg>
+                    </span>
                   </div>
-                </>
-              )}
+                </div>
+                {blog.userEmail === currentUserEmail && (
+                  <>
+                    {editMode && editingBlog && editingBlog.id === blog.id ? (
+                      <div className="p-6 pt-3 flex flex-row items-center">
+                        <button
+                          className="mx-2 block w-full select-none rounded-lg bg-green-500 py-3.5 px-7 text-center align-middle font-sans text-sm font-bold uppercase text-white shadow-md shadow-green-500 transition-all hover:shadow-lg hover:shadow-green-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                          onClick={handleConfirmChanges}
+                        >
+                          Confirm Changes
+                        </button>
+                        <button
+                          className="mx-2 block w-full select-none rounded-lg bg-red-500 py-3.5 px-7 text-center align-middle font-sans text-sm font-bold uppercase text-white shadow-md shadow-red-500 transition-all hover:shadow-lg hover:shadow-red-700 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                          onClick={handleDiscardChanges}
+                        >
+                          Discard Changes
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="p-6 pt-3 flex flex-row items-center">
+                        <button
+                          className="mx-2 block w-full select-none rounded-lg bg-green-500 py-3.5 px-7 text-center align-middle font-sans text-sm font-bold uppercase text-white shadow-md shadow-green-500 transition-all hover:shadow-lg hover:shadow-green-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                          type="button"
+                          data-ripple-light="true"
+                          onClick={() => handleEdit(blog)}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className="mx-2 block w-full select-none rounded-lg bg-red-500 py-3.5 px-7 text-center align-middle font-sans text-sm font-bold uppercase text-white shadow-md shadow-red-500 transition-all hover:shadow-lg hover:shadow-red-700 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                          type="button"
+                          data-ripple-light="true"
+                          onClick={() => handleDeleteBlog(blog.id)}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
             </div>
           ))}
         </div>
@@ -325,4 +453,4 @@ const UserHome = () => {
   );
 };
 
-export default UserHome;
+export default userHome;
