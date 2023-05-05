@@ -149,11 +149,14 @@ const userHome = () => {
     setEditingBlog(null);
     setUpdatedImages([]);
     setUpdatedPriceRange("");
+
+    window.location.reload();
   };
 
   const handleDiscardChanges = () => {
     setEditMode(false);
     setEditingBlog(null);
+    window.location.reload();
   };
 
   useEffect(() => {
@@ -203,7 +206,7 @@ const userHome = () => {
             </g>
           </svg>
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full mx-auto max-w-6xl rounded-xl bg-clip-border shadow-lg">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 w-full mx-auto max-w-6xl rounded-xl bg-clip-border shadow-lg justify-items-center">
           {blogs.map((blog) => (
             <div key={blog.id} className="">
               <div className="relative flex w-full max-w-[34rem] flex-col rounded-xl bg-white bg-opacity-10 backdrop-blur-md p-2 border border-white border-opacity-25">

@@ -90,6 +90,7 @@ const ContactUs = () => {
       tween4.stop();
     };
   }, []);
+
   return (
     <div className=" bg-center  bg-cover bg-no-repeat relative">
       <div className="absolute inset-0 z-[-1]">
