@@ -1,5 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import About from "./Components/About";
+import Blog from "./Components/Blog";
 import ContactUs from "./Components/ContactUs";
 import CreateBlog from "./Components/CreateBlog";
 import Home from "./Components/Home";
@@ -20,6 +21,8 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/about" element={<About />} />
         <Route path="/contactUs" element={<ContactUs />} />
+        <Route path="/blog" element={<Blog />} />
+        <Route path="/blog/:id" element={<Blog />} />
       </Routes>
     </BrowserRouter>
   );

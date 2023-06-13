@@ -174,7 +174,7 @@ const Home = () => {
       <div className="container mx-auto px-36 py-12 max-w-8xl">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-14">
           {/* First card */}
-          <div className="bg-blue-300 p-4 rounded-lg mb-6 pb-12 pt-8">
+          <div className="bg-blue-300 col-span-2 p-4 rounded-lg mb-6 pb-12 pt-8 max-h-[18rem]">
             <div className="mb-4 flex justify-center">
               <svg
                 width="32"
@@ -199,7 +199,7 @@ const Home = () => {
             </p>
           </div>
           {/* Second card */}
-          <div className="bg-blue-400 p-4 rounded-lg mb-6 pb-12 pt-8">
+          <div className="bg-blue-400 col-span-2 lg:col-span-1 p-4 rounded-lg mb-6 pb-12 pt-8">
             <div className="mb-4 flex justify-center">
               <svg
                 width="32"
@@ -230,7 +230,7 @@ const Home = () => {
             </p>
           </div>
           {/* Third card */}
-          <div className="bg-blue-300 p-4 rounded-lg mb-6 pb-12 pt-8">
+          <div className="bg-blue-300 col-span-2 lg:col-span-1 p-4 rounded-lg mb-6 pb-12 pt-8">
             <div className="mb-4 flex justify-center">
               <svg
                 width="32"
@@ -261,7 +261,7 @@ const Home = () => {
             </p>
           </div>
           {/* Fourth card */}
-          <div className="bg-blue-400 p-4 rounded-lg mb-6 pb-12 pt-8">
+          <div className="bg-blue-400 col-span-2 p-4 rounded-lg mb-6 pb-12 pt-8 max-h-[18rem]">
             <div className="mb-4 flex justify-center">
               <svg
                 width="32"
@@ -287,7 +287,7 @@ const Home = () => {
             </p>
           </div>
           {/* Fifth card */}
-          <div className="bg-blue-300 p-4 rounded-lg mb-6 pb-12 pt-8">
+          <div className="bg-blue-300 col-span-2 p-4 rounded-lg mb-6 pb-12 pt-8 max-h-[18rem]">
             <div className="mb-4 flex justify-center">
               <svg
                 width="32"
@@ -312,7 +312,7 @@ const Home = () => {
             </p>
           </div>
           {/* Sixth card */}
-          <div className="bg-blue-400 p-4 rounded-lg mb-6 pb-12 pt-8">
+          <div className="bg-blue-400 col-span-2 lg:col-span-1 p-4 rounded-lg mb-6 pb-12 pt-8">
             <div className="mb-4 flex justify-center">
               <svg
                 width="32"

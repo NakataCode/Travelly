@@ -14,6 +14,7 @@ export default {
         "create-Blog": "url('/images/userHome2.svg')",
         "profile-circle": "url('/images/profileBlob.svg')",
         "contact-Us": "url('/images/contactUsBgg.svg')",
+        "globe-one": "url('/images/plane.jpeg')",
       },
     },
   },

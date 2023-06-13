@@ -12,6 +12,7 @@ import KUTE from "kute.js";
 import { useEffect, useState } from "react";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
+import { Link } from "react-router-dom";
 import { auth, db, storage } from "../firebase";
 import { BlogData } from "../interfaces/blogData";
 import Navbar from "./Navbar";
@@ -26,10 +27,17 @@ const userHome = () => {
   const [currentUserEmail, setCurrentUserEmail] = useState("");
   const [blogsUpdated, setBlogsUpdated] = useState(false);
   const [updatingBlog, setUpdatingBlog] = useState(false);
+  const [activeBlogId, setActiveBlogId] = useState<string | null>(null);
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files) {
-      setUpdatedImages(Array.from(event.target.files));
+    if (event.target.files && event.target.files.length > 0) {
+      const imageFiles = Array.from(event.target.files);
+      setUpdatedImages(imageFiles);
+
+      const imageUrls = imageFiles.map((file) => URL.createObjectURL(file));
+      setUpdatedBlogData((prev) => ({ ...prev, imageUrls }));
+    } else {
+      console.log("No files selected");
     }
   };
 
@@ -74,6 +82,7 @@ const userHome = () => {
     setEditMode(true);
     setEditingBlog(blog);
     setUpdatedBlogData({ ...blog });
+    handleOptionsButtonClick(null);
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -81,6 +90,13 @@ const userHome = () => {
       ...updatedBlogData,
       [event.target.name]: event.target.value,
     });
+  };
+  const handleOptionsButtonClick = (blogId: string | null) => {
+    if (blogId === activeBlogId) {
+      setActiveBlogId(null);
+    } else {
+      setActiveBlogId(blogId);
+    }
   };
 
   const uploadAndUpdateImages = async (
@@ -91,72 +107,63 @@ const userHome = () => {
 
     for (const image of updatedImages) {
       const storageRef = ref(storage, `blog_images/${blogId}/${image.name}`);
-      await uploadBytes(storageRef, image);
-      const imageUrl = await getDownloadURL(storageRef);
-      imageUrls.push(imageUrl);
+      try {
+        await uploadBytes(storageRef, image);
+        const imageUrl = await getDownloadURL(storageRef);
+        imageUrls.push(imageUrl);
+      } catch (error) {
+        console.error("Failed to upload image:", image.name, error);
+      }
     }
 
+    console.log("Uploaded image URLs:", imageUrls);
     return imageUrls;
   };
 
   const handleConfirmChanges = async () => {
     if (!editingBlog || !editingBlog.id) return;
 
+    const finalBlogData: BlogData = {
+      title: updatedBlogData.title || editingBlog.title,
+      description: updatedBlogData.description || editingBlog.description,
+      country: updatedBlogData.country || editingBlog.country,
+      priceRange: updatedPriceRange || editingBlog.priceRange,
+      imageUrls: [],
+      createdAt: editingBlog.createdAt,
+      userEmail: editingBlog.userEmail,
+      id: editingBlog.id,
+    };
+
     const newImageUrls =
       updatedImages.length > 0
         ? await uploadAndUpdateImages(updatedImages, editingBlog.id)
         : editingBlog.imageUrls;
 
-    const isValid =
-      updatedBlogData.title &&
-      updatedBlogData.description &&
-      updatedPriceRange &&
-      updatedBlogData.country &&
-      editingBlog.createdAt &&
-      (newImageUrls === undefined || (newImageUrls && newImageUrls.length > 0));
+    finalBlogData.imageUrls = newImageUrls;
 
-    if (isValid) {
-      await updateDoc(doc(db, "blogs", editingBlog.id), {
-        ...updatedBlogData,
-        imageUrls: newImageUrls,
-        priceRange: updatedPriceRange,
-      });
+    await updateDoc(doc(db, "blogs", editingBlog.id), { ...finalBlogData });
 
-      setBlogs(
-        blogs.map((blog) =>
-          blog.id === editingBlog.id
-            ? {
-                ...editingBlog,
-                ...updatedBlogData,
-                imageUrls: newImageUrls,
-                priceRange: updatedPriceRange,
-              }
-            : blog
-        )
-      );
-      setUpdatingBlog(false);
-      setBlogsUpdated(!blogsUpdated);
-    } else {
-      console.log("Invalid blog update:", {
-        ...editingBlog,
-        ...updatedBlogData,
-        imageUrls: newImageUrls,
-        priceRange: updatedPriceRange,
-      });
-    }
+    setBlogs(
+      blogs.map((blog) => (blog.id === editingBlog.id ? finalBlogData : blog))
+    );
+    setUpdatingBlog(false);
+    setBlogsUpdated(!blogsUpdated);
 
     setEditMode(false);
     setEditingBlog(null);
     setUpdatedImages([]);
     setUpdatedPriceRange("");
-
-    window.location.reload();
   };
 
   const handleDiscardChanges = () => {
+    setUpdatingBlog(false);
+    setBlogsUpdated(!blogsUpdated);
+
     setEditMode(false);
     setEditingBlog(null);
-    window.location.reload();
+    setUpdatedImages([]);
+    setUpdatedPriceRange("");
+    setUpdatedBlogData({});
   };
 
   useEffect(() => {
@@ -210,6 +217,33 @@ const userHome = () => {
           {blogs.map((blog) => (
             <div key={blog.id} className="">
               <div className="relative flex w-full max-w-[34rem] flex-col rounded-xl bg-white bg-opacity-10 backdrop-blur-md p-2 border border-white border-opacity-25">
+                {blog.userEmail === currentUserEmail && !editMode && (
+                  <button
+                    onClick={() =>
+                      handleOptionsButtonClick(blog.id ? blog.id : "")
+                    }
+                    className="cursor-pointer z-10 absolute right-1 top-1 bg-white rounded-full w-6 h-6 flex items-center justify-center text-black"
+                  >
+                    &#8230;
+                  </button>
+                )}
+                {blog.userEmail === currentUserEmail &&
+                  activeBlogId === blog.id && (
+                    <div className="absolute right-2 top-12 w-32 bg-white rounded-lg shadow-lg p-2 z-10">
+                      <button
+                        onClick={() => handleEdit(blog)}
+                        className="w-full text-left block text-black p-1 hover:bg-gray-200"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDeleteBlog(blog.id)}
+                        className="w-full text-left block text-black p-1 hover:bg-gray-200"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  )}
                 <Carousel
                   showThumbs={false}
                   showStatus={false}
@@ -225,13 +259,20 @@ const userHome = () => {
                       className="relative mx-4 mt-4 overflow-hidden rounded-xl bg-blue-gray-500 bg-clip-border text-white shadow-lg shadow-blue-gray-500/40"
                     >
                       {editMode && editingBlog && editingBlog.id === blog.id ? (
-                        <input
-                          type="file"
-                          multiple
-                          onChange={handleImageChange}
-                          accept="image/*"
-                          className="block w-full p-2 border border-gray-300 rounded mb-4 m-auto max-w-3xl"
-                        />
+                        <>
+                          <input
+                            type="file"
+                            multiple
+                            onChange={handleImageChange}
+                            accept="image/*"
+                            className="block w-full p-2 border border-gray-300 rounded mb-4 m-auto max-w-3xl"
+                          />
+                          <img
+                            src={updatedBlogData.imageUrls?.[0] || url}
+                            alt="blog"
+                            className="w-32 h-[22rem] object-cover"
+                          />
+                        </>
                       ) : (
                         <>
                           <img
@@ -271,7 +312,7 @@ const userHome = () => {
                         placeholder="title"
                         value={updatedBlogData.title}
                         onChange={handleChange}
-                        className="block w-full p-2 border border-gray-300 rounded mb-4 m-auto max-w-3xl"
+                        className="block w-full p-2 border text-black border-gray-300 rounded mb-4 m-auto max-w-3xl"
                       />
                     ) : (
                       <>
@@ -303,7 +344,7 @@ const userHome = () => {
                       name="country"
                       value={updatedBlogData.country}
                       onChange={handleChange}
-                      className="block w-full p-2 border border-gray-300 rounded mb-4 m-auto max-w-3xl"
+                      className="block w-full p-2 border text-black border-gray-300 rounded mb-4 m-auto max-w-3xl"
                     />
                   ) : (
                     <h3 className="block font-sans text-md font-medium leading-snug tracking-normal text-blue-gray-900 antialiased mb-2 mt-[-0.7rem]">
@@ -316,7 +357,7 @@ const userHome = () => {
                       name="description"
                       value={updatedBlogData.description}
                       onChange={handleChange}
-                      className="block w-full p-2 border border-gray-300 rounded mb-4 m-auto max-w-3xl"
+                      className="block w-full p-2 border text-black border-gray-300 rounded mb-4 m-auto max-w-3xl"
                     />
                   ) : (
                     <p className="block font-sans text-base font-light leading-relaxed text-white  antialiased">
@@ -330,7 +371,7 @@ const userHome = () => {
                       value={updatedPriceRange}
                       onChange={handlePriceRangeChange}
                       placeholder="Price Range"
-                      className="block w-full p-2 border border-gray-300 rounded mb-4 m-auto max-w-3xl"
+                      className="block w-full p-2 border text-black border-gray-300 rounded mb-4 m-auto max-w-3xl"
                     />
                   ) : (
                     <p className="block font-sans text-base font-light leading-relaxed text-white antialiased">
@@ -408,45 +449,34 @@ const userHome = () => {
                     </span>
                   </div>
                 </div>
-                {blog.userEmail === currentUserEmail && (
-                  <>
-                    {editMode && editingBlog && editingBlog.id === blog.id ? (
-                      <div className="p-6 pt-3 flex flex-row items-center">
-                        <button
-                          className="mx-2 block w-full select-none rounded-lg bg-green-500 py-3.5 px-7 text-center align-middle font-sans text-sm font-bold uppercase text-white shadow-md shadow-green-500 transition-all hover:shadow-lg hover:shadow-green-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-                          onClick={handleConfirmChanges}
-                        >
-                          Confirm Changes
-                        </button>
-                        <button
-                          className="mx-2 block w-full select-none rounded-lg bg-red-500 py-3.5 px-7 text-center align-middle font-sans text-sm font-bold uppercase text-white shadow-md shadow-red-500 transition-all hover:shadow-lg hover:shadow-red-700 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-                          onClick={handleDiscardChanges}
-                        >
-                          Discard Changes
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="p-6 pt-3 flex flex-row items-center">
-                        <button
-                          className="mx-2 block w-full select-none rounded-lg bg-green-500 py-3.5 px-7 text-center align-middle font-sans text-sm font-bold uppercase text-white shadow-md shadow-green-500 transition-all hover:shadow-lg hover:shadow-green-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-                          type="button"
-                          data-ripple-light="true"
-                          onClick={() => handleEdit(blog)}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          className="mx-2 block w-full select-none rounded-lg bg-red-500 py-3.5 px-7 text-center align-middle font-sans text-sm font-bold uppercase text-white shadow-md shadow-red-500 transition-all hover:shadow-lg hover:shadow-red-700 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-                          type="button"
-                          data-ripple-light="true"
-                          onClick={() => handleDeleteBlog(blog.id)}
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    )}
-                  </>
+
+                {!editMode && (
+                  <Link
+                    to={`/blog/${blog.id}`}
+                    className="mx-auto my-2 block select-none rounded-lg bg-blue-500 py-3.5 px-7 text-center align-middle font-sans text-sm font-bold uppercase text-white shadow-md shadow-blue-500 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                  >
+                    Visit Blog
+                  </Link>
                 )}
+                {blog.userEmail === currentUserEmail &&
+                  editMode &&
+                  editingBlog &&
+                  editingBlog.id === blog.id && (
+                    <div className="p-6 pt-3 flex flex-row items-center">
+                      <button
+                        className="mx-2 block w-full select-none rounded-lg bg-green-500 py-3.5 px-7 text-center align-middle font-sans text-sm font-bold uppercase text-white shadow-md shadow-green-500 transition-all hover:shadow-lg hover:shadow-green-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                        onClick={handleConfirmChanges}
+                      >
+                        Confirm
+                      </button>
+                      <button
+                        className="mx-2 block w-full select-none rounded-lg bg-red-500 py-3.5 px-7 text-center align-middle font-sans text-sm font-bold uppercase text-white shadow-md shadow-red-500 transition-all hover:shadow-lg hover:shadow-red-700 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                        onClick={handleDiscardChanges}
+                      >
+                        Discard
+                      </button>
+                    </div>
+                  )}
               </div>
             </div>
           ))}
