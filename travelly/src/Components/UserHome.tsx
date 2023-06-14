@@ -91,6 +91,17 @@ const userHome = () => {
       [event.target.name]: event.target.value,
     });
   };
+
+  function limitDescription(description: string, wordLimit: number) {
+    let words = description.split(" ");
+
+    if (words.length > wordLimit) {
+      return words.slice(0, wordLimit).join(" ") + "...";
+    }
+
+    return description;
+  }
+
   const handleOptionsButtonClick = (blogId: string | null) => {
     if (blogId === activeBlogId) {
       setActiveBlogId(null);
@@ -360,8 +371,8 @@ const userHome = () => {
                       className="block w-full p-2 border text-black border-gray-300 rounded mb-4 m-auto max-w-3xl"
                     />
                   ) : (
-                    <p className="block font-sans text-base font-light leading-relaxed text-white  antialiased">
-                      {blog.description}
+                    <p className="block font-sans text-base font-light leading-relaxed text-white antialiased">
+                      {limitDescription(blog.description, 12)}
                     </p>
                   )}
                   {editMode && editingBlog && editingBlog.id === blog.id ? (
